@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
+	<meta name='description' content='WebRTC Reference App' />
+	<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+
+	<base target='_blank'>
+
+	<title>WebRTC client</title>
+
+	<link rel="stylesheet" href="css/font-awesome.min.css" />
+	<link rel='stylesheet' href='css/main.css' />
+
+</head>
+
+<body>
+
+	<div id='container'>
+
+		<div class="sideBar">
+			<div id="chatControl">
+				<label>Room: </label><span><input id="roomName" class='holo' type="text" /></span>
+				<input id="startChat" type="button" value="Join room" />
+			</div>
+		  <div id='chat'>
+		    <video id='localVideo' class="chatVideo" autoplay muted></video>
+		    <video id='remoteVideo' class="chatVideo" autoplay></video>
+		  </div>
+		</div>
+
+		<div class="mainContent">
+
+				<div id="mainVideoSelectors" class="file-input-icon">
+	  <a id="test">test</a>
+			    <label id="open-file-button-label" for="mainVideoInput">
+		        <span id="open-file-button" class="fa fa-folder-open"></span>
+			    </label>
+
+			    <input id="mainVideoInput" type="file" accept="video/*"/>
+				</div>
+
+				<div id="wrapper">
+					<div id="cell">
+						<div class="content">
+							<video id="mainVideo" controls></video>
+						</div>
+					</div>
+				</div>
+		</div>
+
+	</div>
+
+	<script src='/socket.io/socket.io.js'></script>
+	<script src="js/lib/jquery-2.1.1.min.js"></script>
+	<script src='js/lib/adapter.js'></script>
+	<script src='js/videoChat.js'></script>
+	<script src='js/videoContent.js'></script>
+
+</body>
+</html>

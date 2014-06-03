@@ -1,0 +1,119 @@
+body, html {
+  height: 100%;
+}
+
+body {
+	margin: 0;
+	position: relative;
+}
+
+#container {
+  height: 100%;
+}
+
+.mainContent {
+  height: 100%;
+  overflow: hidden;
+ 	background-color: rgba(0, 5, 12, 0.97);
+ 	margin-right: 300px;
+}
+
+.sideBar {
+  height: 100%;
+  width: 300px;
+  float: right;
+  background-color: rgba(4, 10, 20, 0.9);
+}
+
+.chatVideo {
+	width: 100%;
+}
+
+#mainVideo {
+	width: 100%;
+	display: none;
+}
+
+#wrapper {
+	display:table;
+	height: 100%;
+}
+
+#cell {
+	display:table-cell;
+	vertical-align:middle;
+}
+
+#expandDiv {
+    float:right;
+    display:inline-block;
+    padding:2px 5px;
+    background:#ccc;
+}
+
+input.holo[type='text'] {
+  width: 90%;
+	font-family: sans-serif;
+	font-size: 16px;
+	margin: 0;
+	padding: 14px 8px 6px 8px;
+	position: relative;
+	display: block;
+	outline: none;
+	border: none;
+	background: bottom left linear-gradient(#a9a9a9, #a9a9a9) no-repeat, bottom center linear-gradient(#a9a9a9, #a9a9a9) repeat-x, bottom right linear-gradient(#a9a9a9, #a9a9a9) no-repeat;
+	background-size: 1px 6px, 1px 1px, 1px 6px;
+	color: white;
+}
+
+#startChat {
+	width: 100%;
+	height: 50px;
+	background-color: #37A037;
+	border: none;
+	font-family: sans-serif;
+	font-size: 16px;
+	margin-top: 10px;
+}
+
+#startChat:hover {
+	background-color: #47B047;
+	cursor: pointer;
+}
+
+
+label {
+    float: left;
+    padding: 14px 4px 2px 8px;
+    color: white;
+	font-family: sans-serif;
+}
+span {
+    display: block;
+    overflow: hidden;
+    padding: 0 4px 0 6px
+}
+
+.file-input-icon > input
+{
+    display: none;
+}
+
+#open-file-button {
+	color: #e8e8e8;
+	font-size: 90px;
+	cursor: pointer;
+    display: table-cell;
+    vertical-align: middle;
+    text-align:center;
+}
+
+#open-file-button-label {
+    position:relative; height:100%; width:100%;
+    display: table;
+}
+
+#mainVideoSelectors {
+    position:relative; height:100%; width:100%;
+    display: table;
+}

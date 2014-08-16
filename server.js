@@ -1,9 +1,13 @@
 var static = require('node-static');
 var http = require('http');
 var file = new(static.Server)();
+
+var port = process.env.OPENSHIFT_NODEJS_PORT || 8080  
+, ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+
 var app = http.createServer(function (req, res) {
   file.serve(req, res);
-}).listen(2013);
+}).listen(port, ip);
 
 var io = require('socket.io').listen(app);
 io.sockets.on('connection', function (socket){

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="muviApp">
 <head>
 
 	<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
@@ -17,11 +17,11 @@
 
 <body>
 
-	<div id='container'>
+	<div id='container' ng-controller="muviController">
 
 		<div class="sideBar">
 			<div id="chatControl">
-				<label>Room: </label><span><input id="roomName" class='holo' type="text" /></span>
+				<label>Room: {{test}}</label><span><input id="roomName" class='holo' type="text" /></span>
 				<input id="startChat" type="button" value="Join room" />
 			</div>
 		  <div id='chat'>
@@ -31,14 +31,32 @@
 		</div>
 
 		<div class="mainContent">
+			<div class="outer" ng-show="state === 'Start'">
+				<div class="middle">
+					<div id="sessionButtons" class="inner" ng-show="clientType === 'Undecided'">
+						<a id="hostSessionButton" class="session-button" ng-click="begin(true)">Host</a>
+						<a id="joinSessionButton" class="session-button" ng-click="begin(false)">Join</a>
+					</div>
+					<div id="codeDisplay" class="inner" ng-show="clientType === 'Host'">
+						<span>Session Code:</span>
+						<span>{{getRoomCode()}}</span>
+					</div>
+					<div id="codeEntry" class="inner" ng-show="clientType === 'Join'">
+						<input id="codeInput" class='holo' type="text" ng-value="enteredCode" maxlength="5" placeholder="Code" />
+						<a id="enterCode" ng-click="joinRoom()">Join</a>
+					</div>
+				</div>
+			</div>
 
-				<div id="mainVideoSelectors" class="file-input-icon">
-	  <a id="test">test</a>
-			    <label id="open-file-button-label" for="mainVideoInput">
-		        <span id="open-file-button" class="fa fa-folder-open"></span>
-			    </label>
+			
 
-			    <input id="mainVideoInput" type="file" accept="video/*"/>
+				<!--<div id="mainVideoSelectors" class="file-input-icon">
+	  				<a id="test">test</a>
+				    <label id="open-file-button-label" for="mainVideoInput">
+			        	<span id="open-file-button" class="fa fa-folder-open"></span>
+				    </label>
+
+				    <input id="mainVideoInput" type="file" accept="video/*"/>
 				</div>
 
 				<div id="wrapper">
@@ -47,7 +65,7 @@
 							<video id="mainVideo" controls></video>
 						</div>
 					</div>
-				</div>
+				</div>-->
 		</div>
 
 	</div>
@@ -55,6 +73,8 @@
 	<script src='/socket.io/socket.io.js'></script>
 	<script src="js/lib/jquery-2.1.1.min.js"></script>
 	<script src='js/lib/adapter.js'></script>
+	<script src='js/lib/angular.min.js'></script>
+	<script src='js/muviController.js'></script>
 	<script src='js/videoChat.js'></script>
 	<script src='js/videoContent.js'></script>
 

@@ -117,3 +117,71 @@ span {
     position:relative; height:100%; width:100%;
     display: table;
 }
+
+.session-button {
+	display: inline-block;
+	width: 40%;
+	height: 60px;
+	background-color: #37A037;
+	border: none;
+	font-family: sans-serif;
+	font-size: 16px;
+	margin: 10px;
+    vertical-align: middle;
+    text-align:center;
+    line-height: 60px;
+}
+
+.session-button:hover {
+	background-color: #47B047;
+	cursor: pointer;
+}
+
+.outer {
+    display: table;
+    height: 100%;
+    width: 100%;
+}
+
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.inner {
+    margin-left: auto;
+    margin-right: auto;
+    width: 300px;
+}
+
+#codeDisplay {
+	text-align: center;
+	color: white;
+	font-family: sans-serif;
+	font-size: 24px;
+}
+
+#enterCode {
+	display: inline-block;
+	width: 10%;
+	background-color: #37A037;
+	border: none;
+	font-family: sans-serif;
+	font-size: 16px;
+	margin: 10px;
+    vertical-align: middle;
+    text-align:center;
+    padding: 5px;
+}
+
+#enterCode:hover {
+	background-color: #47B047;
+	cursor: pointer;
+}
+
+#codeInput {
+	display: inline-block;
+	width: 70%;
+	text-align: center;
+	font-size: 20px;
+}

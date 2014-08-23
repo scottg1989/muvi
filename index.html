@@ -20,13 +20,19 @@
 	<div id='container' ng-controller="muviController">
 
 		<div class="sideBar">
-			<div id="chatControl">
-				<label>Room: {{test}}</label><span><input id="roomName" class='holo' type="text" /></span>
-				<input id="startChat" type="button" value="Join room" />
-			</div>
+			<!--<div id="chatControl">
+				<label>Room: {{test}}</label><span><input id="roomName" class='input' type="text" /></span>
+				<input id="startChat" class="button" type="button" value="Join room" />
+			</div>-->
 		  <div id='chat'>
-		    <video id='localVideo' class="chatVideo" autoplay muted></video>
-		    <video id='remoteVideo' class="chatVideo" autoplay></video>
+		  	<span id="localVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!localVideoEnabled"></span>
+		    <video id='localVideo' class="chatVideo" autoplay muted ng-show="localVideoEnabled"></video>
+		  	<span id="remoteVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!remoteVideo"></span>
+		    <video id='remoteVideo' class="chatVideo" autoplay ng-show="remoteVideo"></video>
+		  </div>
+
+		  <div id="footer">
+		  	<span class="fa fa-question" ng-click="showAbout()"></span>&nbsp;
 		  </div>
 		</div>
 
@@ -34,16 +40,30 @@
 			<div class="outer" ng-show="state === 'Start'">
 				<div class="middle">
 					<div id="sessionButtons" class="inner" ng-show="clientType === 'Undecided'">
-						<a id="hostSessionButton" class="session-button" ng-click="begin(true)">Host</a>
-						<a id="joinSessionButton" class="session-button" ng-click="begin(false)">Join</a>
+						<a id="hostSessionButton" class="button session-button" ng-click="begin(true)">Host</a>
+						<a id="joinSessionButton" class="button session-button" ng-click="begin(false)">Join</a>
 					</div>
 					<div id="codeDisplay" class="inner" ng-show="clientType === 'Host'">
 						<span>Session Code:</span>
-						<span>{{getRoomCode()}}</span>
+						<span id="codeDisplayText">{{roomId}}</span>
+						<span class="text-small" ng-show="roomCreated">Waiting for someone to join..</span>
 					</div>
 					<div id="codeEntry" class="inner" ng-show="clientType === 'Join'">
-						<input id="codeInput" class='holo' type="text" ng-value="enteredCode" maxlength="5" placeholder="Code" />
-						<a id="enterCode" ng-click="joinRoom()">Join</a>
+						<input id="codeInput" class='input' type="text" ng-value="enteredCode" maxlength="5" placeholder="Code" />
+						<a id="enterCode" class="button-small" ng-click="joinRoom()">Join</a>
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state == 'ChoosingVideo'">
+				<div class="middle">
+					<div id="chooseVideo" class="inner">
+						<div id="mainVideoSelectors" class="file-input-icon">
+					    <label id="open-file-button-label" for="mainVideoInput">
+			        	<a id="open-file-button" class="button">Choose File..</a>
+					    </label>
+
+					    <input id="mainVideoInput" type="file" accept="video/*"/>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -70,13 +90,15 @@
 
 	</div>
 
-	<script src='/socket.io/socket.io.js'></script>
+	<script src="/socket.io/socket.io.js"></script>
 	<script src="js/lib/jquery-2.1.1.min.js"></script>
-	<script src='js/lib/adapter.js'></script>
-	<script src='js/lib/angular.min.js'></script>
-	<script src='js/muviController.js'></script>
-	<script src='js/videoChat.js'></script>
-	<script src='js/videoContent.js'></script>
+	<script src="js/lib/adapter.js"></script>
+	<script src="js/lib/angular.min.js"></script>
+	<script src="js/muviController.js"></script>
+	<script src="js/session.js"></script>
+	<script src="js/ioSocket.js"></script>
+	<!--<script src="js/videoChat.js"></script>
+	<script src="js/videoContent.js"></script>-->
 
 </body>
 </html>

@@ -15,16 +15,32 @@ angular.module('muviApp', [])
       return code;
     }
 
-
-    var state_start = 'Start';
+    var state_awaitingCam = 'AwaitingCam';
+    var state_choosingSide = 'ChoosingSide';
     var state_choosingVideo = 'ChoosingVideo';
 
-
-    $scope.state = state_start;
+    $scope.webcamState = 'Awaiting';
     $scope.clientType = 'Undecided';
     $scope.localVideoEnabled = false;
     $scope.remoteVideo = false;
     $scope.roomCreated = false;
+
+
+    $scope.state = state_awaitingCam;
+
+
+    session.registerWebcamCallback(function (msg) {
+      if (msg === 'connected') {
+        $scope.$apply(function () {
+          $scope.state = state_choosingSide;
+        });
+      } else if (msg === 'error') {
+        $scope.$apply(function () {
+          $scope.webcamState = 'Errored';
+        });
+      }
+    })
+
 
     /* start */
 

@@ -37,7 +37,17 @@
 		</div>
 
 		<div class="mainContent">
-			<div class="outer" ng-show="state === 'Start'">
+			<div class="outer" ng-show="state === 'AwaitingCam'">
+				<div class="middle">
+					<div id="webcamAwait" class="inner" ng-show="webcamState === 'Awaiting'">
+						Please accept webcam request.
+					</div>
+					<div id="webcamError" class="inner" ng-show="webcamState === 'Errored'">
+						Error: you must allow webcam access to continue.
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state === 'ChoosingSide'">
 				<div class="middle">
 					<div id="sessionButtons" class="inner" ng-show="clientType === 'Undecided'">
 						<a id="hostSessionButton" class="button session-button" ng-click="begin(true)">Host</a>

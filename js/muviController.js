@@ -39,7 +39,7 @@ angular.module('muviApp', [])
           $scope.webcamState = 'Errored';
         });
       }
-    })
+    });
 
 
     /* start */

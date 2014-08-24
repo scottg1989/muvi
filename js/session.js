@@ -11,6 +11,8 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   var clientJoinedCallbacks = [];
   var callConnectedCallbacks = [];
   var webcamCallbacks = [];
+  var channel;
+  var initiator = false;
 
   function fireEvent(ev, callbacks) {
     var arrayLength = callbacks.length;
@@ -76,11 +78,22 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
       pc.onaddstream = handleRemoteStreamAdded;
       pc.oniceconnectionstatechange = handleIceConnectionStateChange;
 
+      if (initiator) {
+        channel = pc.createDataChannel("Mydata");
+        setUpDataChannel();
+      } else {
+        pc.ondatachannel = function (e) {
+          channel = e.channel;
+          setUpDataChannel();
+        };
+      }
+
       pc.addStream(localStream);
   }
 
   function call() {
     console.log("Starting call");
+    initiator = true;
     createPeerConnection();
     pc.createOffer(setLocalAndSendMessage);
   }
@@ -89,6 +102,21 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     pc.setLocalDescription(description);
     console.log("Setting local: \n" + description.sdp);
     sendMessage(description);
+  }
+
+  function setUpDataChannel () {
+    channel.onopen = function(event) {
+      console.log('onopen called');
+    };
+    channel.onmessage = function(event) { 
+      console.log(event.data); 
+    };
+    channel.onerror = function (err) {
+      console.log("Channel Error:", err);
+    };
+    channel.onclose = function (event) {
+      console.log('Channel closed');
+    };
   }
 
   function handleIceConnectionStateChange(ev) {
@@ -153,15 +181,15 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     ioSocket.socket.emit('create-room', roomId, callback);
   };
 
-  this.joinRoom = function(roomId, callback) {
+  this.joinRoom = function (roomId, callback) {
     ioSocket.socket.emit('join-room', roomId, callback);
   };
 
-  this.registerOnClientJoined = function(callback){
+  this.registerOnClientJoined = function (callback){
     clientJoinedCallbacks.push(callback);
   };
 
-  this.makeCall = function() {
+  this.makeCall = function () {
     //ensure room is set up
     call();
   };
@@ -170,8 +198,12 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     hangup();
   };
 
-  this.registerOnCallConnected = function(callback) {
+  this.registerOnCallConnected = function (callback) {
     callConnectedCallbacks.push(callback);
+  };
+
+  this.sendData = function (data) {
+    channel.send(data);
   };
 
 }]);

@@ -66,7 +66,7 @@
 			</div>
 			<div class="outer" ng-show="state == 'ChoosingVideo'">
 				<div class="middle">
-					<div id="chooseVideo" class="inner">
+					<div id="chooseVideo" class="inner" ng-show="clientType === 'Host'">
 						<div id="mainVideoSelectors" class="file-input-icon">
 					    <label id="open-file-button-label" for="mainVideoInput">
 			        	<a id="open-file-button" class="button">Choose File..</a>

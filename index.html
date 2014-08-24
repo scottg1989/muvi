@@ -59,7 +59,7 @@
 						<span class="text-small" ng-show="roomCreated">Waiting for someone to join..</span>
 					</div>
 					<div id="codeEntry" class="inner" ng-show="clientType === 'Join'">
-						<input id="codeInput" class='input' type="text" ng-value="enteredCode" maxlength="5" placeholder="Code" />
+						<input id="codeInput" class='input' type="text" ng-model="enteredCode" maxlength="5" placeholder="Code" />
 						<a id="enterCode" class="button-small" ng-click="joinRoom()">Join</a>
 					</div>
 				</div>

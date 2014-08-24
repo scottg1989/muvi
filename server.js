@@ -53,6 +53,8 @@ io.sockets.on('connection', function (socket) {
       if (callback) {
         callback('Room is not waiting for clients to join.');
       }
+
+      return;
     }
 
     //'join' the room, and inform the client
@@ -63,51 +65,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     //let all in the room know about the new joiner.
-    socket.broadcast.emit('join');
+    socket.broadcast.to(roomId).emit('join');
   });
-
-	/*socket.on('create or join', function (room) {
-		var numClients = io.sockets.clients(room).length;
-
-		log('Room ' + room + ' has ' + numClients + ' client(s)');
-		log('Request to create or join room', room);
-
-		if (numClients == 0){
-			socket.join(room);
-			socket.emit('created', room);
-		} else if (numClients == 1) {
-			io.sockets.in(room).emit('join', room);
-			socket.join(room);
-			socket.emit('joined', room);
-		} else { // max two clients
-			socket.emit('full', room);
-		}
-		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-
-	});*/
-
-	socket.on('fileChosen', function (filename) {
-		socket.broadcast.emit('fileChosen', filename);
-	});
-
-  socket.on('acceptFile', function () {
-		socket.broadcast.emit('acceptFile');
-		setTimeout(function () {
-			io.sockets/*.in(room)*/.emit('playVideo');
-		}, 1000);
-  });
-
-  socket.on('triggerPlayVideo', function () {
-  	socket.broadcast.emit('playVideo');
-  });
-
-  socket.on('triggerPauseVideo', function () {
-		socket.broadcast.emit('pauseVideo');
-  });
-
-  socket.on('triggerSeekVideo', function (newTime) {
-  	socket.broadcast.emit('seekVideo', newTime);
-  })
-
 });
 

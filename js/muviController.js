@@ -63,7 +63,14 @@ angular.module('muviApp', [])
     $scope.enteredCode = '';
 
     $scope.joinRoom = function() {
-      session.joinRoom($scope.enteredCode);
+      session.joinRoom($scope.enteredCode, function (err) {
+        if (err) {
+          alert('Code was not valid');
+          $scope.$apply(function () {
+            enteredCode = '';
+          });
+        }
+      });
     };
 
     session.registerOnClientJoined(function () {

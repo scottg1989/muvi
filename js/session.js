@@ -35,8 +35,6 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     fireEvent('connected', webcamCallbacks);
   }
 
-
-
   ioSocket.socket.on('join', function (room) {
     console.log('Another peer made a request to join room ' + room);
     console.log('This peer is the initiator of room ' + room + '!');
@@ -207,3 +205,36 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   };
 
 }]);
+
+
+
+
+/* TO ADD
+
+
+
+  socket.on('fileChosen', function (filename) {
+    socket.broadcast.emit('fileChosen', filename);
+  });
+
+  socket.on('acceptFile', function () {
+    socket.broadcast.emit('acceptFile');
+    setTimeout(function () {
+      io.sockets.emit('playVideo');
+    }, 1000);
+  });
+
+  socket.on('triggerPlayVideo', function () {
+    socket.broadcast.emit('playVideo');
+  });
+
+  socket.on('triggerPauseVideo', function () {
+    socket.broadcast.emit('pauseVideo');
+  });
+
+  socket.on('triggerSeekVideo', function (newTime) {
+    socket.broadcast.emit('seekVideo', newTime);
+  })
+
+
+   */

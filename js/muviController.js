@@ -21,7 +21,7 @@ angular.module('muviApp', [])
 
     $scope.webcamState = 'Awaiting';
     $scope.clientType = 'Undecided';
-    $scope.localVideoEnabled = false;
+    $scope.localVideo = false;
     $scope.remoteVideo = false;
     $scope.roomCreated = false;
 
@@ -29,9 +29,10 @@ angular.module('muviApp', [])
     $scope.state = state_awaitingCam;
 
 
-    session.registerWebcamCallback(function (msg) {
+    session.registerLocalCamCallback(function (msg) {
       if (msg === 'connected') {
         $scope.$apply(function () {
+          $scope.localVideo = true;
           $scope.state = state_choosingSide;
         });
       } else if (msg === 'error') {
@@ -39,6 +40,12 @@ angular.module('muviApp', [])
           $scope.webcamState = 'Errored';
         });
       }
+    });
+
+    session.registerRemoteCamCallback(function () {
+      $scope.$apply(function () {
+        $scope.remoteVideo = true;
+      });
     });
 
 
@@ -96,9 +103,6 @@ angular.module('muviApp', [])
 
     session.startLocalVideo(function () {
       $scope.$apply(function () {
-        $scope.localVideoEnabled = true;
-
-        $scope.remoteVideo = true;
       });
     });
   }]);

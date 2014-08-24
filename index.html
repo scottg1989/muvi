@@ -20,13 +20,9 @@
 	<div id='container' ng-controller="muviController">
 
 		<div class="sideBar">
-			<!--<div id="chatControl">
-				<label>Room: {{test}}</label><span><input id="roomName" class='input' type="text" /></span>
-				<input id="startChat" class="button" type="button" value="Join room" />
-			</div>-->
 		  <div id='chat'>
-		  	<span id="localVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!localVideoEnabled"></span>
-		    <video id='localVideo' class="chatVideo" autoplay muted ng-show="localVideoEnabled"></video>
+		  	<span id="localVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!localVideo"></span>
+		    <video id='localVideo' class="chatVideo" autoplay muted ng-show="localVideo"></video>
 		  	<span id="remoteVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!remoteVideo"></span>
 		    <video id='remoteVideo' class="chatVideo" autoplay ng-show="remoteVideo"></video>
 		  </div>
@@ -77,25 +73,6 @@
 					</div>
 				</div>
 			</div>
-
-			
-
-				<!--<div id="mainVideoSelectors" class="file-input-icon">
-	  				<a id="test">test</a>
-				    <label id="open-file-button-label" for="mainVideoInput">
-			        	<span id="open-file-button" class="fa fa-folder-open"></span>
-				    </label>
-
-				    <input id="mainVideoInput" type="file" accept="video/*"/>
-				</div>
-
-				<div id="wrapper">
-					<div id="cell">
-						<div class="content">
-							<video id="mainVideo" controls></video>
-						</div>
-					</div>
-				</div>-->
 		</div>
 
 	</div>
@@ -107,8 +84,6 @@
 	<script src="js/muviController.js"></script>
 	<script src="js/session.js"></script>
 	<script src="js/ioSocket.js"></script>
-	<!--<script src="js/videoChat.js"></script>
-	<script src="js/videoContent.js"></script>-->
 
 </body>
 </html>

@@ -10,7 +10,8 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   var callCompleted = false;
   var clientJoinedCallbacks = [];
   var callConnectedCallbacks = [];
-  var webcamCallbacks = [];
+  var localCamCallbacks = [];
+  var remoteCamCallbacks = [];
   var channel;
   var initiator = false;
 
@@ -32,7 +33,7 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     console.log('Got user media! Adding local stream.');
     localVideo.src = window.URL.createObjectURL(stream);
     localStream = stream;
-    fireEvent('connected', webcamCallbacks);
+    fireEvent('connected', localCamCallbacks);
   }
 
   ioSocket.socket.on('join', function (room) {
@@ -140,6 +141,7 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
 
   function handleRemoteStreamAdded(event) {
     remoteVideo.src = URL.createObjectURL(event.stream);
+    fireEvent('connected', remoteCamCallbacks);
     console.log("Received remote stream");
   }
 
@@ -171,8 +173,12 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     });
   };
 
-  this.registerWebcamCallback = function(callback){
-    webcamCallbacks.push(callback);
+  this.registerLocalCamCallback = function (callback){
+    localCamCallbacks.push(callback);
+  };
+
+  this.registerRemoteCamCallback = function (callback) {
+    remoteCamCallbacks.push(callback);
   };
 
   this.createRoom = function(roomId, callback) {

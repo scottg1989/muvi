@@ -63,7 +63,7 @@ io.sockets.on('connection', function (socket) {
     }
 
     //let all in the room know about the new joiner.
-    socket.broadcast.emit('');
+    socket.broadcast.emit('join');
   });
 
 	/*socket.on('create or join', function (room) {

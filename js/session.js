@@ -6,6 +6,17 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   var remoteVideo = document.querySelector('#remoteVideo');
   var localStream;
   var remoteStream;
+  var pc;
+  var callCompleted = false;
+  var clientJoinedCallbacks = [];
+  var callConnectedCallbacks = [];
+
+  function fireEvent(ev, callbacks) {
+    var arrayLength = callbacks.length;
+    for (var i = 0; i < arrayLength; i++) {
+      callbacks[i](ev);
+    }
+  }
 
   //sends a message to the server
   function sendMessage(message) {
@@ -22,81 +33,97 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
 
 
 
+  ioSocket.socket.on('join', function (room) {
+    console.log('Another peer made a request to join room ' + room);
+    console.log('This peer is the initiator of room ' + room + '!');
+    fireEvent('client joined', clientJoinedCallbacks);
+  });
+
+
+
 
   /* RTC STUFF */
-
-  var sdpConstraints = {
-    'mandatory': {
-      'OfferToReceiveAudio': true,
-      'OfferToReceiveVideo': true
-    }
-  };
 
   function sendMessage(message) {
     console.log('Client sending message: ', message);
     ioSocket.socket.emit('message', message);
   }
 
-  var localPeerConnection, remotePeerConnection;
+  ioSocket.socket.on('message', function (message) {
+    console.log('Client received message:', message);
+    if (message.type === 'offer') {
+      createPeerConnection();
+      pc.setRemoteDescription(new RTCSessionDescription(message));
+      pc.createAnswer(setLocalAndSendMessage);
+    } else if (message.type === 'answer') {
+      pc.setRemoteDescription(new RTCSessionDescription(message));
+    } else if (message.type === 'candidate') {
+      var candidate = new RTCIceCandidate({
+        sdpMLineIndex: message.label,
+        candidate: message.candidate
+      });
+      pc.addIceCandidate(candidate);
+    } else if (message === 'bye') {
+      hangup();
+    }
+  });
+
+  function createPeerConnection() {
+      pc = new RTCPeerConnection(null);
+      pc.onicecandidate = gotIceCandidate;
+      pc.onaddstream = handleRemoteStreamAdded;
+      pc.oniceconnectionstatechange = handleIceConnectionStateChange;
+
+      pc.addStream(localStream);
+  }
 
   function call() {
     console.log("Starting call");
-
-    var servers = null;
-
-    localPeerConnection = new RTCPeerConnection(servers);
-    console.log("Created local peer connection object localPeerConnection");
-    localPeerConnection.onicecandidate = gotLocalIceCandidate;
-
-    remotePeerConnection = new RTCPeerConnection(servers);
-    console.log("Created remote peer connection object remotePeerConnection");
-    remotePeerConnection.onicecandidate = gotRemoteIceCandidate;
-    remotePeerConnection.onaddstream = gotRemoteStream;
-
-    localPeerConnection.addStream(localStream);
-    console.log("Added localStream to localPeerConnection");
-    localPeerConnection.createOffer(gotLocalDescription);
+    createPeerConnection();
+    pc.createOffer(setLocalAndSendMessage);
   }
 
-  function gotLocalDescription(description) {
-    localPeerConnection.setLocalDescription(description);
-    console.log("Offer from localPeerConnection: \n" + description.sdp);
-    remotePeerConnection.setRemoteDescription(description);
-    remotePeerConnection.createAnswer(gotRemoteDescription);
+  function setLocalAndSendMessage(description) {
+    pc.setLocalDescription(description);
+    console.log("Setting local: \n" + description.sdp);
+    sendMessage(description);
   }
 
-  function gotRemoteDescription(description) {
-    remotePeerConnection.setLocalDescription(description);
-    console.log("Answer from remotePeerConnection: \n" + description.sdp);
-    localPeerConnection.setRemoteDescription(description);
+  function handleIceConnectionStateChange(ev) {
+    if (callCompleted) {
+      return;
+    }
+
+    if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+      fireEvent('connected', callConnectedCallbacks);
+      callCompleted = true;
+    }
   }
 
   function hangup() {
-    trace("Ending call");
-    localPeerConnection.close();
-    remotePeerConnection.close();
-    localPeerConnection = null;
-    remotePeerConnection = null;
-    hangupButton.disabled = true;
-    callButton.disabled = false;
+    if (pc != null) {
+      console.log("Ending call");
+      pc.close();
+      pc = null;
+
+      sendMessage('bye');
+    }
   }
 
-  function gotRemoteStream(event) {
+  function handleRemoteStreamAdded(event) {
     remoteVideo.src = URL.createObjectURL(event.stream);
     console.log("Received remote stream");
   }
 
-  function gotLocalIceCandidate(event) {
+  function gotIceCandidate(event) {
     if (event.candidate) {
-      remotePeerConnection.addIceCandidate(new RTCIceCandidate(event.candidate));
-      console.log("Local ICE candidate: \n" + event.candidate.candidate);
-    }
-  }
-
-  function gotRemoteIceCandidate(event) {
-    if (event.candidate) {
-      localPeerConnection.addIceCandidate(new RTCIceCandidate(event.candidate));
-      console.log("Remote ICE candidate: \n " + event.candidate.candidate);
+      sendMessage({
+        type: 'candidate',
+        label: event.candidate.sdpMLineIndex,
+        id: event.candidate.sdpMid,
+        candidate: event.candidate.candidate});
+    } else {
+      console.log('End of candidates.');
     }
   }
 
@@ -123,9 +150,21 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
     ioSocket.socket.emit('join-room', roomId, callback);
   };
 
+  this.registerOnClientJoined = function(callback){
+    clientJoinedCallbacks.push(callback);
+  };
+
   this.makeCall = function() {
     //ensure room is set up
     call();
+  };
+
+  this.endCall = function () {
+    hangup();
+  };
+
+  this.registerOnCallConnected = function(callback) {
+    callConnectedCallbacks.push(callback);
   };
 
 }]);

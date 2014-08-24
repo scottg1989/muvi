@@ -39,7 +39,6 @@ angular.module('muviApp', [])
             $scope.roomCreated = true;
           });
         });
-        //state = state_choosingVideo;
       }
     };
 
@@ -48,9 +47,18 @@ angular.module('muviApp', [])
     $scope.enteredCode = '';
 
     $scope.joinRoom = function() {
-      $scope.state = state_choosingVideo;
+      session.joinRoom($scope.enteredCode);
     };
 
+    session.registerOnClientJoined(function () {
+      session.makeCall();
+    });
+
+    session.registerOnCallConnected(function () {
+      $scope.$apply(function () {
+        $scope.state = state_choosingVideo;
+      });
+    })
 
     /* choosing video */
 
@@ -59,13 +67,15 @@ angular.module('muviApp', [])
     };
 
 
+    $scope.makeCall = function () {
+      session.makeCall();
+    };
 
     session.startLocalVideo(function () {
       $scope.$apply(function () {
         $scope.localVideoEnabled = true;
 
         $scope.remoteVideo = true;
-        session.makeCall();
       });
     });
   }]);

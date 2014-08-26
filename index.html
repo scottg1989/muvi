@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="muviApp">
 <head>
 
 	<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
@@ -17,46 +17,102 @@
 
 <body>
 
-	<div id='container'>
+	<div id='container' ng-controller="muviController">
 
 		<div class="sideBar">
-			<div id="chatControl">
-				<label>Room: </label><span><input id="roomName" class='holo' type="text" /></span>
-				<input id="startChat" type="button" value="Join room" />
-			</div>
 		  <div id='chat'>
-		    <video id='localVideo' class="chatVideo" autoplay muted></video>
-		    <video id='remoteVideo' class="chatVideo" autoplay></video>
+		  	<span id="localVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!localVideo"></span>
+		    <video id='localVideo' class="chatVideo" autoplay muted ng-show="localVideo"></video>
+		  	<span id="remoteVideoPlaceholder" class="video-placeholder fa fa-video-camera" ng-show="!remoteVideo"></span>
+		    <video id='remoteVideo' class="chatVideo" autoplay ng-show="remoteVideo"></video>
+		  </div>
+
+		  <div id="footer">
+		  	<span class="fa fa-question" ng-click="showAbout()"></span>&nbsp;
 		  </div>
 		</div>
 
 		<div class="mainContent">
-
-				<div id="mainVideoSelectors" class="file-input-icon">
-	  <a id="test">test</a>
-			    <label id="open-file-button-label" for="mainVideoInput">
-		        <span id="open-file-button" class="fa fa-folder-open"></span>
-			    </label>
-
-			    <input id="mainVideoInput" type="file" accept="video/*"/>
+			<div class="outer" ng-show="state === 'AwaitingCam'">
+				<div class="middle">
+					<div id="webcamAwait" class="inner" ng-show="webcamState === 'Awaiting'">
+						Please accept webcam request.
+					</div>
+					<div id="webcamError" class="inner" ng-show="webcamState === 'Errored'">
+						Error: you must allow webcam access to continue.
+					</div>
 				</div>
+			</div>
+			<div class="outer" ng-show="state === 'ChoosingSide'">
+				<div class="middle">
+					<div id="sessionButtons" class="inner" ng-show="clientType === 'Undecided'">
+						<a id="hostSessionButton" class="button session-button" ng-click="begin(true)">Host</a>
+						<a id="joinSessionButton" class="button session-button" ng-click="begin(false)">Join</a>
+					</div>
+					<div id="codeDisplay" class="inner" ng-show="clientType === 'Host'">
+						<span>Session Code:</span>
+						<span id="codeDisplayText">{{roomId}}</span>
+						<span class="text-small" ng-show="roomCreated">Waiting for someone to join..</span>
+					</div>
+					<div id="codeEntry" class="inner" ng-show="clientType === 'Join'">
+						<input id="codeInput" class='input' type="text" ng-model="enteredCode" maxlength="5" placeholder="Code" />
+						<a id="enterCode" class="button-small" ng-click="joinRoom()">Join</a>
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state == 'ChoosingVideo'">
+				<div class="middle">
+					<div id="chooseVideo" class="inner" ng-show="clientType === 'Host'">
+						<div id="mainVideoSelectors" class="file-input-icon">
+					    <label id="open-file-button-label" for="mainVideoInput">
+			        	<a id="open-file-button" class="button">Choose File..</a>
+					    </label>
 
-				<div id="wrapper">
-					<div id="cell">
-						<div class="content">
-							<video id="mainVideo" controls></video>
+					    <input id="mainVideoInput" type="file" accept="video/*"/>
 						</div>
 					</div>
 				</div>
+			</div>
+			<div class="outer" ng-show="state == 'ChoosingFunction'">
+				<div class="middle">
+					<div class="inner" ng-show="clientType === 'Host'">
+						<a class="button session-button" ng-click="chooseFunction('local files')">Local video files</a>
+					</div>
+					<div class="inner" ng-show="clientType === 'Join'">
+						Waiting for host..
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state == 'Function'">
+				<div class="middle" ng-show="chosenFunction === 'LocalFiles'">
+					<div class="inner" ng-show="clientType === 'Host' || localfile_state === 'Choose Video'">
+						<div id="mainVideoSelectors" class="file-input-icon">
+						    <label id="open-file-button-label" for="mainVideoInput">
+					        	<span id="open-file-button" class="fa fa-folder-open"></span>
+						    </label>
+						    <input id="mainVideoInput" type="file" accept="video/*"/>
+						</div>
+					</div>
+					<div class="inner" ng-show="clientType === 'Join' && localfile_state === 'Awaiting Host'">
+						Local, yeah!
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state === 'Video'">
+			VIDEO
+				<video id="mainVideo" controls></video>
+			</div>
 		</div>
 
 	</div>
 
-	<script src='/socket.io/socket.io.js'></script>
+	<script src="/socket.io/socket.io.js"></script>
 	<script src="js/lib/jquery-2.1.1.min.js"></script>
-	<script src='js/lib/adapter.js'></script>
-	<script src='js/videoChat.js'></script>
-	<script src='js/videoContent.js'></script>
+	<script src="js/lib/adapter.js"></script>
+	<script src="js/lib/angular.min.js"></script>
+	<script src="js/muviController.js"></script>
+	<script src="js/session.js"></script>
+	<script src="js/ioSocket.js"></script>
 
 </body>
 </html>

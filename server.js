@@ -2,22 +2,18 @@ var static = require('node-static');
 var http = require('http');
 var file = new(static.Server)();
 
-var port = process.env.OPENSHIFT_NODEJS_PORT || 8080  
-, ip = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
+var port = process.argv[2] || process.env.OPENSHIFT_NODEJS_PORT || 8080  
+  , ip = process.argv[3] || process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
 var app = http.createServer(function (req, res) {
   file.serve(req, res);
 }).listen(port, ip);
 
 var io = require('socket.io').listen(app);
-io.sockets.on('connection', function (socket){
+io.sockets.on('connection', function (socket) {
 
 	function log(){
-		var array = [">>> Message from server: "];
-	  for (var i = 0; i < arguments.length; i++) {
-	  	array.push(arguments[i]);
-	  }
-	    socket.emit('log', array);
+    console.log(Array.prototype.slice.call(arguments).join(''));
 	}
 
 	socket.on('message', function (message) {
@@ -26,49 +22,50 @@ io.sockets.on('connection', function (socket){
 		socket.broadcast.emit('message', message);
 	});
 
-	socket.on('create or join', function (room) {
-		var numClients = io.sockets.clients(room).length;
+  socket.on('create-room', function (roomId, callback) {
+    log('create-room recieved, with roomId of ', roomId);
 
-		log('Room ' + room + ' has ' + numClients + ' client(s)');
-		log('Request to create or join room', room);
+    //ensure this is a new (empty) room
+    var numClients = io.sockets.clients(roomId).length;
+    if (numClients !== 0) {
+      log('create-room error');
+      if (callback) {
+        callback('Room already exists.');
+      }
+      return;
+    }
 
-		if (numClients == 0){
-			socket.join(room);
-			socket.emit('created', room);
-		} else if (numClients == 1) {
-			io.sockets.in(room).emit('join', room);
-			socket.join(room);
-			socket.emit('joined', room);
-		} else { // max two clients
-			socket.emit('full', room);
-		}
-		socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
-		socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
-
-	});
-
-	socket.on('fileChosen', function (filename) {
-		socket.broadcast.emit('fileChosen', filename);
-	});
-
-  socket.on('acceptFile', function () {
-		socket.broadcast.emit('acceptFile');
-		setTimeout(function () {
-			io.sockets/*.in(room)*/.emit('playVideo');
-		}, 1000);
+    //'join' the room, and inform the client
+    socket.join(roomId);
+    log('create-room success');
+    if (callback) {
+      callback();
+    }
   });
 
-  socket.on('triggerPlayVideo', function () {
-  	socket.broadcast.emit('playVideo');
+  socket.on('join-room', function (roomId, callback) {
+    log('join-room recieved, with roomId of ', roomId);
+
+    //ensure that this room has been set up
+    var numClients = io.sockets.clients(roomId).length;
+    if (numClients !== 1) {
+      log('join-room error');
+      if (callback) {
+        callback('Room is not waiting for clients to join.');
+      }
+
+      return;
+    }
+
+    //'join' the room, and inform the client
+    socket.join(roomId);
+    log('join-room success');
+    if (callback) {
+      callback();
+    }
+
+    //let all in the room know about the new joiner.
+    socket.broadcast.to(roomId).emit('join');
   });
-
-  socket.on('triggerPauseVideo', function () {
-		socket.broadcast.emit('pauseVideo');
-  });
-
-  socket.on('triggerSeekVideo', function (newTime) {
-  	socket.broadcast.emit('seekVideo', newTime);
-  })
-
 });
 

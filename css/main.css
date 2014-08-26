@@ -31,7 +31,6 @@ body {
 
 #mainVideo {
 	width: 100%;
-	display: none;
 }
 
 #wrapper {
@@ -224,4 +223,12 @@ span {
 	color: white;
 	font-family: sans-serif;
 	font-size: 18px;
+}
+
+#open-file-button {
+	font-size: 60px;
+}
+
+#open-file-button:hover {
+	cursor: pointer;
 }

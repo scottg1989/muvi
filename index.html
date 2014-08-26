@@ -73,6 +73,35 @@
 					</div>
 				</div>
 			</div>
+			<div class="outer" ng-show="state == 'ChoosingFunction'">
+				<div class="middle">
+					<div class="inner" ng-show="clientType === 'Host'">
+						<a class="button session-button" ng-click="chooseFunction('local files')">Local video files</a>
+					</div>
+					<div class="inner" ng-show="clientType === 'Join'">
+						Waiting for host..
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state == 'Function'">
+				<div class="middle" ng-show="chosenFunction === 'LocalFiles'">
+					<div class="inner" ng-show="clientType === 'Host' || localfile_state === 'Choose Video'">
+						<div id="mainVideoSelectors" class="file-input-icon">
+						    <label id="open-file-button-label" for="mainVideoInput">
+					        	<span id="open-file-button" class="fa fa-folder-open"></span>
+						    </label>
+						    <input id="mainVideoInput" type="file" accept="video/*"/>
+						</div>
+					</div>
+					<div class="inner" ng-show="clientType === 'Join' && localfile_state === 'Awaiting Host'">
+						Local, yeah!
+					</div>
+				</div>
+			</div>
+			<div class="outer" ng-show="state === 'Video'">
+			VIDEO
+				<video id="mainVideo" controls></video>
+			</div>
 		</div>
 
 	</div>

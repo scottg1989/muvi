@@ -12,6 +12,7 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   var callConnectedCallbacks = [];
   var localCamCallbacks = [];
   var remoteCamCallbacks = [];
+  var dataReceivedCallbacks = [];
   var channel;
   var initiator = false;
 
@@ -108,7 +109,8 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
       console.log('onopen called');
     };
     channel.onmessage = function(event) { 
-      console.log(event.data); 
+      console.log('received message: ' + event.data);
+      fireEvent(event.data, dataReceivedCallbacks);
     };
     channel.onerror = function (err) {
       console.log("Channel Error:", err);
@@ -207,40 +209,12 @@ angular.module('muviApp').service('session', ['ioSocket', function(ioSocket) {
   };
 
   this.sendData = function (data) {
+    console.log('Sending data: ' + data);
     channel.send(data);
   };
 
+  this.registerOnDataReceived = function (callback) {
+    dataReceivedCallbacks.push(callback);
+  };
+
 }]);
-
-
-
-
-/* TO ADD
-
-
-
-  socket.on('fileChosen', function (filename) {
-    socket.broadcast.emit('fileChosen', filename);
-  });
-
-  socket.on('acceptFile', function () {
-    socket.broadcast.emit('acceptFile');
-    setTimeout(function () {
-      io.sockets.emit('playVideo');
-    }, 1000);
-  });
-
-  socket.on('triggerPlayVideo', function () {
-    socket.broadcast.emit('playVideo');
-  });
-
-  socket.on('triggerPauseVideo', function () {
-    socket.broadcast.emit('pauseVideo');
-  });
-
-  socket.on('triggerSeekVideo', function (newTime) {
-    socket.broadcast.emit('seekVideo', newTime);
-  })
-
-
-   */
